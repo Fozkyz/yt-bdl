@@ -7,20 +7,68 @@ namespace yt_bdl
 	{
 		static void Main(string[] args)
 		{
-			//string jsonText = System.IO.File.ReadAllText("data.json");
-			Console.WriteLine("Hello, World!");
+			// ----- Tests fetchlist to json -----
+			////string jsonText = System.IO.File.ReadAllText("data.json");
+			//Console.WriteLine("Hello, World!");
 
-			//GenerateExampleFetchlistJson();
-			var fetchList = new Fetchlist();
-			var date = DateTime.Now;
-			fetchList.Add(new Sub("C1", "Chaine 1", date, Sub.SubType.Channel), "Humour");
-			fetchList.Add(new Sub("C1", "Chaine 1", date, Sub.SubType.Channel), "Humour");
-			fetchList.Add(new Sub("C2", "Chaine 2", date, Sub.SubType.Channel), "Humour");
-			fetchList.Add(new Sub("C3", "Chaine 3", date, Sub.SubType.Channel), "GAMING");
+			////GenerateExampleFetchlistJson();
+			//var fetchList = new Fetchlist();
+			//var date = DateTime.Now;
+			//fetchList.Add(new Sub("C1", "Chaine 1", date, Sub.SubType.Channel), "Humour");
+			//fetchList.Add(new Sub("C1", "Chaine 1", date, Sub.SubType.Channel), "Humour");
+			//fetchList.Add(new Sub("C2", "Chaine 2", date, Sub.SubType.Channel), "Humour");
+			//fetchList.Add(new Sub("C3", "Chaine 3", date, Sub.SubType.Channel), "GAMING");
 
+			//var options = new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() } };
+			//var jsonText = JsonSerializer.Serialize(fetchList, options);
+			//File.WriteAllText("E:/output.json", jsonText);
+
+			// ----- Tests config file -----
+			WriteConfigFile(new Config("myApiKey", ""));
+			SetApiKey("myNewAPIkey");
+		}
+
+		public static void WriteConfigFile(Config? config)
+		{
+			if (config == null)
+			{
+				config = new Config("", "");
+			}
 			var options = new JsonSerializerOptions { WriteIndented = true, Converters = { new JsonStringEnumConverter() } };
-			var r = JsonSerializer.Serialize(fetchList, options);
-			File.WriteAllText("E:/output.json", r);
+			var jsonText = JsonSerializer.Serialize(config, options);
+			File.WriteAllText("config.json", jsonText);
+		}
+
+		public static void SetApiKey(string apiKey)
+		{
+			var jsonText = File.ReadAllText("config.json");
+			Config? config = JsonSerializer.Deserialize<Config>(jsonText);
+			if (config != null)
+			{
+				config.ApiKey = apiKey;
+				WriteConfigFile(config);
+			}
+		}
+
+		public static void SetOutputPath(string outputPath)
+		{
+			var jsonText = File.ReadAllText("config.json");
+			Config? config = JsonSerializer.Deserialize<Config>(jsonText);
+			if (config != null)
+			{
+				config.OutputPath = outputPath;
+				WriteConfigFile(config);
+			}
+		}
+
+		public static void GetApiKey()
+		{
+			var jsonText = File.ReadAllText("config.json");
+			Config? config = JsonSerializer.Deserialize<Config>(jsonText);
+			if (config != null)
+			{
+				Console.WriteLine(config.ApiKey);
+			}
 		}
 
 		public static void AddSubToFetchlist(List<Sublist> fetchlists, Sub sub, string fetchlistName)
