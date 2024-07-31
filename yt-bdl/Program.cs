@@ -1,11 +1,13 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace yt_bdl
 {
 	internal class Program
 	{
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
 			// ----- Tests fetchlist to json -----
 			////string jsonText = System.IO.File.ReadAllText("data.json");
@@ -24,8 +26,59 @@ namespace yt_bdl
 			//File.WriteAllText("E:/output.json", jsonText);
 
 			// ----- Tests config file -----
-			WriteConfigFile(new Config("myApiKey", ""));
-			SetApiKey("myNewAPIkey");
+			//WriteConfigFile(new Config("myApiKey", ""));
+			//SetApiKey("myNewAPIkey");
+
+
+			// ----- Tests video downloading -----
+			Console.WriteLine("Enter your api key :");
+			var key = Console.ReadLine();
+			if (key == null )
+			{
+				return;
+			}
+
+			var youTubeHelper = new YouTubeHelper(key);
+
+			await DownloadVideo("KSlGJv3LZII", "E:/Temp", youTubeHelper);
+			//try
+			//{
+			//	var video = await youTubeHelper.GetVideo("BzBbd6JshYE");
+			//	await VideoDownloader.DownloadVideo(video, "E:/Temp");
+			//}
+			//catch (Exception ex)
+			//{
+			//	Console.WriteLine(ex.Message);
+			//}
+
+		}
+
+		public static async Task DownloadVideo(string id, string path, YouTubeHelper youTubeHelper)
+		{
+			try
+			{
+				var video = await youTubeHelper.GetVideo(id);
+				await VideoDownloader.DownloadVideo(video, path);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+
+			//var process = new Process();
+			//var startInfo = new ProcessStartInfo();
+
+			//var url = "https://www.youtube.com/watch?v=" + id;
+
+			//startInfo.WindowStyle = ProcessWindowStyle.Normal;
+			//startInfo.WorkingDirectory = path;
+			//startInfo.FileName = "cmd.exe";
+			//startInfo.Arguments = "/C yt-dlp " + url + " -f \"bv+ba/b\" --merge-output-format mp4";
+
+			//process.StartInfo = startInfo;
+			//process.Start();
+
+			//await process.WaitForExitAsync();
 		}
 
 		public static void WriteConfigFile(Config? config)
